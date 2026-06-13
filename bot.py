@@ -4,6 +4,9 @@
 
 import requests
 from datetime import date
+import smtplib
+from email.mime.text import MIMEText
+import os
 
 
 def get_weather(city="Kannur"):
@@ -63,7 +66,33 @@ def run():
     # save to a file (uploaded as downloadable artifact)
     with open("daily_summary.txt", "w", encoding="utf-8") as f:
         f.write(summary)
+    send_email(summary)
     print("Pulse ran successfully")
+
+
+def send_email(summary_text):
+    sender = os.environ.get("EMAIL_SENDER")
+    password = os.environ.get("EMAIL_PASSWORD")
+    receiver = os.environ.get("EMAIL_RECEIVER")
+
+    print(f"Sender: {sender}")
+    print(f"Receiver: {receiver}")
+
+    msg = MIMEText(summary_text)
+    msg['Subject'] = 'Pulse Daily Summary'
+    msg['From'] = sender
+    msg['To'] = receiver
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(sender, password)
+            server.send_message(msg)
+
+        print("Email sent successfully")
+
+    except Exception as e:
+        print("Email failed:", e)
+        raise
 
 
 if __name__ == "__main__":
