@@ -6,7 +6,7 @@ import requests
 from datetime import date
 
 
-def get_weather(city="Thiruvananthapuram"):
+def get_weather(city="Kannur"):
     url = f"http://wttr.in/{city}?format=3"
     try:
         response = requests.get(url, timeout=10)
